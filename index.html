@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ランぬ育成TA - 俺の修行を手伝ってくれ！</title>
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ランぬ育成TA - 俺の修行を手伝ってくれ！">
+    <meta property="og:description" content="ランぬと遊…修行をしてくれ！">
+    <meta property="og:image" content="https://Lanchangames.github.io/lanikuseigame/image.png">
+
+    <style>
+        :root { --p-light: #e0f7fa; --p-main: #81d4fa; --p-dark: #0288d1; --danger: #ff5252; }
+        body { margin: 0; padding: 0; display: flex; justify-content: center; min-height: 100dvh; background: #1a2a3a; font-family: 'Hiragino Maru Gothic Pro', sans-serif; overflow: hidden; }
+        #game-container { width: 100vw; max-width: 450px; height: 100dvh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.5); overflow: hidden; }
+        
+        /* タイマーエリア */
+        #timer-area { flex-shrink: 0; padding-top: 10px; background: white; z-index: 20; }
+        #timer-display { text-align: center; font-size: 28px; font-weight: bold; color: var(--p-dark); margin: 0; }
+        #limit-display { text-align: center; font-size: 16px; font-weight: bold; color: var(--danger); margin: 2px 0 5px 0; }
+        
+        /* ヘッダー */
+        #header { padding: 0 20px 5px; text-align: center; }
+        .stats { font-weight: bold; color: var(--p-dark); font-size: 14px; margin-bottom: 2px; }
+        #exp-bar-bg { width: 100%; height: 10px; background: #eee; border-radius: 5px; }
+        #exp-bar-fill { width: 0%; height: 100%; background: var(--p-dark); transition: width 0.2s; }
+        
+        /* ステージ */
+        #stage { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #ffffff 0%, var(--p-light) 100%); position: relative; min-height: 200px; }
+        #msg-bubble { background: white; padding: 10px 15px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-weight: bold; width: 85%; text-align: center; border: 2px solid var(--p-main); z-index: 5; font-size: 14px; }
+        #avatar-container { width: 60%; max-height: 250px; aspect-ratio: 1/1; display: flex; justify-content: center; align-items: flex-end; transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #avatar-img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); }
+        
+        /* トレイエリア */
+        #tray-scroll-area { flex-shrink: 0; height: 200px; background: #f9f9f9; border-top: 2px solid var(--p-light); overflow-y: auto; }
+        #tray { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px 12px 30px; }
+        .item-btn { border: 2px solid #eee; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80px; cursor: pointer; background: white; transition: 0.1s; }
+        .item-label { font-size: 9px; font-weight: bold; color: #666; margin-top: 2px; text-align: center; }
+        .item-btn span { font-size: 24px; }
+        .item-btn:active { transform: scale(0.9); background: var(--p-light); }
+        .item-btn.disabled { opacity: 0.2; pointer-events: none; }
+        
+        /* オーバーレイ */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 136, 209, 0.98); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; color: white; text-align: center; padding: 20px; box-sizing: border-box; }
+        .btn-main { margin-top: 20px; padding: 12px 30px; border-radius: 25px; border: none; background: white; color: var(--p-dark); font-weight: bold; cursor: pointer; font-size: 18px; }
+        
+        /* ハイスコア表示用スタイル */
+        .best-score { margin-top: 10px; font-size: 16px; color: #fff; background: rgba(0,0,0,0.2); padding: 5px 15px; border-radius: 15px; }
+        
+        .sulking { animation: shake 0.1s infinite; }
+        .sulking-filter { filter: grayscale(1) contrast(1.2) opacity(0.7) !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="start-screen" class="overlay">
+        <h1 style="font-size: 24px;">ランぬ育成TA</h1>
+        <p style="font-size: 14px;">ランぬが修行をはじめるぞ！<br>欲しがっているものを与えてランぬを手伝ってくれ！<br>ランぬを成長させて、制限時間内にLv.5を目指せ！</p>
+        
+        <div id="best-score-display" class="best-score">Best Time: --.-s</div>
+        
+        <button class="btn-main" onclick="startGame()">修行をはじめる！</button>
+    </div>
+
+    <div id="gameover-screen" class="overlay" style="display: none; background: rgba(0,0,0,0.9);">
+        <h1 style="font-size: 32px; color: var(--danger);">TIME UP...</h1>
+        <button class="btn-main" onclick="location.reload()">リベンジだ！</button>
+    </div>
+
+    <div id="result-screen" class="overlay" style="display: none;">
+        <h1 style="font-size: 32px;">修行完了！</h1>
+        <div id="final-time" style="font-size: 40px; font-weight: bold; margin: 10px 0;"></div>
+        <div id="new-record-msg" style="color: #ffd700; font-weight: bold; margin-bottom: 10px; display: none;">New Record!</div>
+        <button class="btn-main" onclick="shareX()" style="background: #1DA1F2; color: white;">報告する</button>
+        <button onclick="location.reload()" style="background:none; border:none; color:white; margin-top:15px; text-decoration:underline; cursor:pointer; font-size:14px;">戻る</button>
+    </div>
+
+    <div id="timer-area">
+        <p id="timer-display">0.00</p>
+        <p id="limit-display">残り: <span id="time-left">60.0</span>s</p>
+        <div id="header">
+            <div class="stats">なかよしLv. <span id="lv">1</span> / 5</div>
+            <div id="exp-bar-bg"><div id="exp-bar-fill"></div></div>
+        </div>
+    </div>
+
+    <div id="stage">
+        <div id="msg-bubble"><span id="wanted">準備中...</span></div>
+        <div id="avatar-container">
+            <img src="avatar.png" id="avatar-img" alt="ランぬ" onerror="this.style.display='none';">
+        </div>
+    </div>
+
+    <div id="tray-scroll-area">
+        <div id="tray">
+            <div class="item-btn" onclick="tapItem('クッキー')"><span>🍪</span><div class="item-label">クッキー</div></div>
+            <div class="item-btn" onclick="tapItem('くまのぬいぐるみ')"><span>🧸</span><div class="item-label">くまのぬいぐるみ</div></div>
+            <div class="item-btn" onclick="tapItem('アイス')"><span>🍦</span><div class="item-label">アイス</div></div>
+            <div class="item-btn" onclick="tapItem('剣')"><span>⚔️</span><div class="item-label">剣</div></div>
+            <div class="item-btn" onclick="tapItem('本')"><span>📚</span><div class="item-label">本</div></div>
+            <div class="item-btn" onclick="tapItem('ねこ')"><span>🐱</span><div class="item-label">ねこ</div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const TIME_LIMIT = 60;
+    let love = 0, lv = 1, wantedItem = "", isLocked = false, startTime = 0, gameActive = false, feintTimeout = null;
+    const items = ['クッキー', 'くまのぬいぐるみ', 'アイス', '剣', '本', 'ねこ'];
+
+    // --- ハイスコア機能：ページ読み込み時に表示を更新 ---
+    window.onload = function() {
+        const bestTime = localStorage.getItem('rannu_ta_best');
+        if (bestTime) {
+            document.getElementById('best-score-display').innerText = `Best Time: ${parseFloat(bestTime).toFixed(2)}s`;
+        }
+    };
+
+    function startGame() {
+        document.getElementById('start-screen').style.display = 'none';
+        gameActive = true;
+        startTime = Date.now();
+        love = 0; lv = 1; isLocked = false;
+        setWanted();
+        requestAnimationFrame(updateTimer);
+    }
+
+    function updateTimer() {
+        if (!gameActive) return;
+        const now = Date.now();
+        const elapsed = (now - startTime) / 1000;
+        const remaining = Math.max(0, TIME_LIMIT - elapsed);
+        document.getElementById('timer-display').innerText = elapsed.toFixed(2);
+        document.getElementById('time-left').innerText = remaining.toFixed(1);
+        if (remaining <= 0) { gameOver(); return; }
+        requestAnimationFrame(updateTimer);
+    }
+
+    function setWanted() {
+        if (!gameActive || isLocked) return;
+        clearTimeout(feintTimeout);
+        wantedItem = items[Math.floor(Math.random() * items.length)];
+        const msgSpan = document.getElementById('wanted');
+        const bubble = document.getElementById('msg-bubble');
+        msgSpan.innerText = wantedItem + " を頼む！";
+        bubble.style.color = "black";
+
+        const feintChance = lv === 1 ? 0 : 0.3 + (lv * 0.12);
+        if (lv >= 2 && Math.random() < feintChance) {
+            let feintDelay = Math.max(350, 900 - (lv * 80)); 
+            feintTimeout = setTimeout(() => {
+                if(!gameActive || isLocked) return;
+                let newItem;
+                do { newItem = items[Math.floor(Math.random() * items.length)]; } while (newItem === wantedItem);
+                wantedItem = newItem;
+                msgSpan.innerText = "あ、やっぱり " + wantedItem + "！";
+                bubble.style.color = "var(--danger)";
+            }, feintDelay);
+        }
+    }
+
+    function tapItem(name) {
+        if (!gameActive || isLocked) return;
+        if (name === wantedItem) {
+            love += 34;
+            const avContainer = document.getElementById('avatar-container');
+            avContainer.style.transform = "translateY(-10px)";
+            setTimeout(() => avContainer.style.transform = "translateY(0)", 150);
+            if (love >= 100) levelUp(); else setWanted();
+        } else {
+            applyPenalty();
+        }
+        updateUI();
+    }
+
+    function applyPenalty() {
+        isLocked = true;
+        clearTimeout(feintTimeout); 
+        const avContainer = document.getElementById('avatar-container');
+        const avImg = document.getElementById('avatar-img');
+        const bubble = document.getElementById('msg-bubble');
+        const msgSpan = document.getElementById('wanted');
+        avContainer.classList.add('sulking');
+        avImg.classList.add('sulking-filter');
+        bubble.style.backgroundColor = "#f5f5f5";
+        msgSpan.innerText = "えっ、それじゃないぞ！";
+        document.querySelectorAll('.item-btn').forEach(b => b.classList.add('disabled'));
+        setTimeout(() => {
+            if (!gameActive) return;
+            isLocked = false;
+            avContainer.classList.remove('sulking');
+            avImg.classList.remove('sulking-filter');
+            bubble.style.backgroundColor = "white";
+            document.querySelectorAll('.item-btn').forEach(b => b.classList.remove('disabled'));
+            setWanted();
+        }, 1500);
+    }
+
+    function levelUp() {
+        lv++; love = 0;
+        if (lv > 5) { finishGame(); return; }
+        isLocked = true;
+        document.getElementById('wanted').innerText = "ありがとう！俺、強くなれたか？";
+        setTimeout(() => { if (!gameActive) return; isLocked = false; setWanted(); updateUI(); }, 1000);
+    }
+
+    function gameOver() { gameActive = false; document.getElementById('gameover-screen').style.display = 'flex'; }
+
+    function finishGame() {
+        gameActive = false;
+        const finalTime = parseFloat(document.getElementById('timer-display').innerText);
+        document.getElementById('final-time').innerText = finalTime.toFixed(2) + "s";
+        
+        // --- ハイスコアの比較・保存 ---
+        const prevBest = localStorage.getItem('rannu_ta_best');
+        if (!prevBest || finalTime < parseFloat(prevBest)) {
+            localStorage.setItem('rannu_ta_best', finalTime);
+            document.getElementById('new-record-msg').style.display = 'block';
+        }
+
+        document.getElementById('result-screen').style.display = 'flex';
+    }
+
+    function updateUI() { document.getElementById('lv').innerText = Math.min(lv, 5); document.getElementById('exp-bar-fill').style.width = love + "%"; }
+    
+    function shareX() {
+        const time = document.getElementById('timer-display').innerText;
+        const text = encodeURIComponent(`ランぬ育成TA、記録${time}で修行完了だ！\n#RoommateConnect #ランぬ育成TA`);
+        window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+    }
+</script>
+
+</body>
+</html>
