@@ -97,7 +97,7 @@
 
     <div id="timer-area">
         <p id="timer-display">0.00</p>
-        <p id="limit-display">残り: <span id="time-left">60.0</span>s</p>
+        <p id="limit-display">残り: <span id="time-left">100.0</span>s</p>
         <div id="header">
             <div class="stats">修行Lv. <span id="lv">1</span> / 8</div>
             <div id="exp-bar-bg"><div id="exp-bar-fill"></div></div>
@@ -139,7 +139,8 @@
         click: () => { playTone(600, 'sine', 0.1, 0.05); }
     };
 
-    const TIME_LIMIT = 60;
+    // ★ 制限時間を100秒に変更
+    const TIME_LIMIT = 100;
     const MAX_LEVEL = 8;
     let love = 0, lv = 1, wantedItem = "", isLocked = false, startTime = 0, gameActive = false, feintTimeout = null;
     
@@ -267,7 +268,6 @@
         sounds.lvUp();
         isLocked = true;
         
-        // ★レベルアップメッセージの出し分け
         let lvMsg = "";
         if (lv === 8) lvMsg = "もっと修行に付き合ってくれ！";
         else lvMsg = "ありがとう！俺、もっとやれるぞ！";
