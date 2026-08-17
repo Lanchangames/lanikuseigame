@@ -139,10 +139,9 @@
         click: () => { playTone(600, 'sine', 0.1, 0.05); }
     };
 
-    // ★ 制限時間を100秒に変更
     const TIME_LIMIT = 100;
     const MAX_LEVEL = 8;
-    let love = 0, lv = 1, wantedItem = "", isLocked = false, startTime = 0, gameActive = false, feintTimeout = null;
+    let love = 0, lv = 1, wantedItem = "", isLocked = false, startTime = 0, gameActive = false, feintTimeout = null, gameClearTime = 0;
     
     const itemData = [
         { name: 'クッキー', icon: '🍪' }, { name: 'くまのぬいぐるみ', icon: '🧸' }, { name: 'アイス', icon: '🍦' },
@@ -227,7 +226,6 @@
     function tapItem(name) {
         if (!gameActive || isLocked) return;
         
-        // --- 追加: 制限時間超過の厳密な判定 ---
         const elapsed = (Date.now() - startTime) / 1000;
         if (elapsed >= TIME_LIMIT) {
             gameOver();
@@ -241,7 +239,15 @@
             const av = document.getElementById('avatar-container');
             av.style.transform = "translateY(-10px)";
             setTimeout(() => av.style.transform = "translateY(0)", 150);
-            if (love >= 100) levelUp(); else { if(lv >= 6) renderButtons(); setWanted(); }
+            if (love >= 100) {
+                 if (lv === MAX_LEVEL) {
+                     gameClearTime = elapsed;
+                 }
+                 levelUp();
+            } else { 
+                 if(lv >= 6) renderButtons(); 
+                 setWanted(); 
+            }
         } else {
             sounds.wrong();
             applyPenalty();
@@ -272,7 +278,6 @@
     function levelUp() {
         lv++; love = 0;
         
-        // --- 修正: lv > MAX_LEVEL の判定を先に行う ---
         if (lv > MAX_LEVEL) { 
             finishGame(); 
             return; 
@@ -301,13 +306,11 @@
 
     function finishGame() {
         gameActive = false;
-        // --- 修正: 表示されているテキストではなく実時間から計算 ---
-        const finalTime = (Date.now() - startTime) / 1000;
         
-        document.getElementById('final-time').innerText = finalTime.toFixed(2) + "s";
+        document.getElementById('final-time').innerText = gameClearTime.toFixed(2) + "s";
         const prevBest = localStorage.getItem('rannu_ta_best');
-        if (!prevBest || finalTime < parseFloat(prevBest)) {
-            localStorage.setItem('rannu_ta_best', finalTime);
+        if (!prevBest || gameClearTime < parseFloat(prevBest)) {
+            localStorage.setItem('rannu_ta_best', gameClearTime);
             document.getElementById('new-record-msg').style.display = 'block';
         }
         document.getElementById('result-screen').style.display = 'flex';
@@ -315,16 +318,9 @@
 
     function updateUI() { document.getElementById('lv').innerText = Math.min(lv, MAX_LEVEL); document.getElementById('exp-bar-fill').style.width = love + "%"; }
     function shareX() {
-        // --- ここは finishGame で記録した実時間(finalTime)を使うべきだが、
-        // 既存の動きを維持するため timer-display から取るならそのままでも良いが、
-        // より正確にするなら finalTime を使った方が良い。
-        // 今回の指示では「finalTimeをすべてに使用してください」とあるので、
-        // 画面の表示(final-time要素)から取得する形にするか、変数を保持するか。
-        // 変数 finalTime を再取得できるようDOMから取る。
         const timeStr = document.getElementById('final-time').innerText;
-        // 元は timer-display の値だったが、"s"付きの timeStr になったので調整
         const time = timeStr.replace('s', ''); 
-        const text = encodeURIComponent(`ランぬ、【限界突破】記録${time}秒で修行完了だ！ #ランぬ修行中`);
+        const text = encodeURIComponent(`ランぬ、【限界突破】記録${time}で修行完了だ！ #ランぬ修行中`);
         window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
     }
 </script>
