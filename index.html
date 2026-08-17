@@ -226,6 +226,14 @@
 
     function tapItem(name) {
         if (!gameActive || isLocked) return;
+        
+        // --- 追加: 制限時間超過の厳密な判定 ---
+        const elapsed = (Date.now() - startTime) / 1000;
+        if (elapsed >= TIME_LIMIT) {
+            gameOver();
+            return;
+        }
+        
         sounds.click();
         if (name === wantedItem) {
             sounds.correct();
@@ -263,8 +271,14 @@
 
     function levelUp() {
         lv++; love = 0;
+        
+        // --- 修正: lv > MAX_LEVEL の判定を先に行う ---
+        if (lv > MAX_LEVEL) { 
+            finishGame(); 
+            return; 
+        }
+        
         updateBackground();
-        if (lv > MAX_LEVEL) { finishGame(); return; }
         sounds.lvUp();
         isLocked = true;
         
@@ -287,7 +301,9 @@
 
     function finishGame() {
         gameActive = false;
-        const finalTime = parseFloat(document.getElementById('timer-display').innerText);
+        // --- 修正: 表示されているテキストではなく実時間から計算 ---
+        const finalTime = (Date.now() - startTime) / 1000;
+        
         document.getElementById('final-time').innerText = finalTime.toFixed(2) + "s";
         const prevBest = localStorage.getItem('rannu_ta_best');
         if (!prevBest || finalTime < parseFloat(prevBest)) {
@@ -299,8 +315,16 @@
 
     function updateUI() { document.getElementById('lv').innerText = Math.min(lv, MAX_LEVEL); document.getElementById('exp-bar-fill').style.width = love + "%"; }
     function shareX() {
-        const time = document.getElementById('timer-display').innerText;
-        const text = encodeURIComponent(`ランぬ、【限界突破】記録${time}で修行完了だ！ #ランぬ修行中`);
+        // --- ここは finishGame で記録した実時間(finalTime)を使うべきだが、
+        // 既存の動きを維持するため timer-display から取るならそのままでも良いが、
+        // より正確にするなら finalTime を使った方が良い。
+        // 今回の指示では「finalTimeをすべてに使用してください」とあるので、
+        // 画面の表示(final-time要素)から取得する形にするか、変数を保持するか。
+        // 変数 finalTime を再取得できるようDOMから取る。
+        const timeStr = document.getElementById('final-time').innerText;
+        // 元は timer-display の値だったが、"s"付きの timeStr になったので調整
+        const time = timeStr.replace('s', ''); 
+        const text = encodeURIComponent(`ランぬ、【限界突破】記録${time}秒で修行完了だ！ #ランぬ修行中`);
         window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
     }
 </script>
