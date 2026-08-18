@@ -66,10 +66,17 @@
         
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 136, 209, 0.98); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; color: white; text-align: center; padding: 20px; box-sizing: border-box; }
         .btn-main { margin-top: 20px; padding: 12px 30px; border-radius: 25px; border: none; background: white; color: var(--p-dark); font-weight: bold; cursor: pointer; font-size: 18px; }
-        .best-score { margin-top: 10px; font-size: 16px; color: #fff; background: rgba(0,0,0,0.2); padding: 5px 15px; border-radius: 15px; }
+        .best-score { margin-top: 10px; font-size: 16px; color: #fff; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; line-height: 1.4; }
         .sulking { animation: shake 0.1s infinite; }
         .sulking-filter { filter: grayscale(1) contrast(1.2) opacity(0.7) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+
+        /* 追加UI（既存デザインを一切阻害しない独立クラス） */
+        .combo-text { position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: bold; color: #ff9800; text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; pointer-events: none; opacity: 0; transition: transform 0.1s, opacity 0.2s; z-index: 10; transform: scale(1); }
+        .combo-anim { transform: scale(1.3) !important; opacity: 1 !important; }
+        .bonus-text { position: absolute; top: 15px; left: 20px; font-size: 14px; font-weight: bold; color: #ff4081; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 10px; border: 2px solid #ff4081; pointer-events: none; opacity: 0; z-index: 10; transition: opacity 0.2s; }
+        .reaction-text { position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); font-size: 16px; font-weight: bold; color: var(--danger); background: white; padding: 4px 12px; border-radius: 12px; border: 2px solid var(--danger); pointer-events: none; opacity: 0; z-index: 15; white-space: nowrap; transition: opacity 0.3s, bottom 0.3s; }
+        .reaction-anim { opacity: 1 !important; bottom: 170px !important; }
     </style>
 </head>
 <body>
@@ -78,7 +85,7 @@
     <div id="start-screen" class="overlay">
         <h1 style="font-size: 24px;">ランぬ修行中！</h1>
         <p style="font-size: 14px;">ランぬの要求にこたえて修行のお手伝い！<br>ぬい界の頂点を目指せ！</p>
-        <div id="best-score-display" class="best-score">Best Time: --.-s</div>
+        <div id="best-score-display" class="best-score">BEST TIME<br>--.--s<br><br>HIGH SCORE<br>-----</div>
         <button class="btn-main" onclick="initAudio(); startGame();">修行をはじめる！</button>
     </div>
 
@@ -88,10 +95,23 @@
     </div>
 
     <div id="result-screen" class="overlay" style="display: none;">
-        <h1 style="font-size: 32px;">修行完了！</h1>
-        <div id="final-time" style="font-size: 40px; font-weight: bold; margin: 10px 0;"></div>
-        <div id="new-record-msg" style="color: #ffd700; font-weight: bold; margin-bottom: 10px; display: none;">New Record!</div>
-        <button class="btn-main" onclick="shareX()" style="background: #1DA1F2; color: white;">報告する</button>
+        <h1 style="font-size: 32px; margin: 0 0 15px 0;">修行完了！</h1>
+        
+        <div style="font-size: 14px; margin-bottom: 15px; line-height: 1.5;">
+            記録<br><span id="final-time" style="font-size: 20px; font-weight: bold;"></span><br><br>
+            最高コンボ<br><span id="final-combo" style="font-size: 20px; font-weight: bold;"></span> COMBO
+        </div>
+        
+        <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">SCORE</div>
+        <div id="final-score" style="font-size: 36px; font-weight: bold; margin: 0 0 15px 0; color: #ffd700;"></div>
+        
+        <div id="result-title" style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: white;"></div>
+        
+        <div id="new-record-msg" style="color: #ffd700; font-weight: bold; font-size: 14px; margin-bottom: 5px; display: none;">New Record!</div>
+        <div id="new-highscore-msg" style="color: #ff9800; font-weight: bold; font-size: 14px; margin-bottom: 15px; display: none;">NEW HIGH SCORE!</div>
+        
+        <button class="btn-main" onclick="shareX()" style="background: #1DA1F2; color: white; margin-top: 0;">報告する</button>
+        <button class="btn-main" onclick="location.reload()" style="margin-top: 10px;">リトライ</button>
         <button onclick="location.reload()" style="background:none; border:none; color:white; margin-top:15px; text-decoration:underline; cursor:pointer; font-size:14px;">タイトルへ</button>
     </div>
 
@@ -105,6 +125,10 @@
     </div>
 
     <div id="stage">
+        <div id="bonus-display" class="bonus-text"></div>
+        <div id="combo-display" class="combo-text"></div>
+        <div id="reaction-display" class="reaction-text"></div>
+
         <div id="msg-bubble"><span id="wanted">準備中...</span></div>
         <div id="avatar-container">
             <img src="avatar.png" id="avatar-img" alt="ランぬ" onerror="this.style.display='none';">
@@ -141,8 +165,44 @@
 
     const TIME_LIMIT = 100;
     const MAX_LEVEL = 8;
-    let love = 0, lv = 1, wantedItem = "", isLocked = false, startTime = 0, gameActive = false, feintTimeout = null, gameClearTime = 0;
     
+    // スコア計算用定数
+    const SCORE_BASE = 100000;
+    const TIME_SCORE_MULTIPLIER = 1000;
+    const COMBO_SCORE_BONUS = 300;
+
+    const FINAL_LEVEL_DISPLAY_TIME = 500;
+    const BONUS_CHANCE = 0.02;
+    
+    let love = 0, lv = 1, wantedItem = "", isLocked = false, startTime = 0, gameActive = false, feintTimeout = null, gameClearTime = 0;
+    let combo = 0;
+    let maxCombo = 0;
+    let finalScore = 0;
+    let hideWantedTimeout = null;
+    let reactionTimeout = null;
+    let bonusRounds = 0;
+    let currentTitle = "";
+
+    const WANTED_TEMPLATES = [
+        "{item} を頼む！", 
+        "{item}！", 
+        "{item}持ってきてくれ！", 
+        "{item}が欲しい！", 
+        "次は {item} だ！"
+    ];
+
+    const REACTIONS = [
+        "それだ！", "さすがだな！", "早い！", "いいぞ！", "よし、次だ！", "その調子！"
+    ];
+
+    const TITLES = [
+        { minScore: 90000, name: "限界突破" },
+        { minScore: 80000, name: "ぬい界の頂点" },
+        { minScore: 70000, name: "修行の達人" },
+        { minScore: 60000, name: "修行仲間" },
+        { minScore: 0,     name: "ぬい界の見習い" }
+    ];
+
     const itemData = [
         { name: 'クッキー', icon: '🍪' }, { name: 'くまのぬいぐるみ', icon: '🧸' }, { name: 'アイス', icon: '🍦' },
         { name: '剣', icon: '⚔️' }, { name: '本', icon: '📚' }, { name: 'ねこ', icon: '🐱' }
@@ -150,7 +210,12 @@
 
     window.onload = function() {
         const bestTime = localStorage.getItem('rannu_ta_best');
-        if (bestTime) document.getElementById('best-score-display').innerText = `Best Time: ${parseFloat(bestTime).toFixed(2)}s`;
+        const highScore = localStorage.getItem('rannu_ta_high_score');
+        
+        const bestTimeStr = bestTime ? `${parseFloat(bestTime).toFixed(2)}s` : "--.--s";
+        const highScoreStr = highScore ? parseInt(highScore, 10).toLocaleString() : "-----";
+        
+        document.getElementById('best-score-display').innerHTML = `BEST TIME<br>${bestTimeStr}<br><br>HIGH SCORE<br>${highScoreStr}`;
         renderButtons();
     };
 
@@ -178,6 +243,9 @@
         gameActive = true;
         startTime = Date.now();
         love = 0; lv = 1; isLocked = false;
+        combo = 0; maxCombo = 0; finalScore = 0; bonusRounds = 0;
+        updateComboDisplay();
+        updateBonusDisplay();
         updateBackground();
         renderButtons();
         setWanted();
@@ -204,23 +272,104 @@
     function setWanted() {
         if (!gameActive || isLocked) return;
         clearTimeout(feintTimeout);
+        clearTimeout(hideWantedTimeout);
+
         const randIndex = Math.floor(Math.random() * itemData.length);
         wantedItem = itemData[randIndex].name;
-        document.getElementById('wanted').innerText = wantedItem + " を頼む！";
+        
+        // 要求文ランダム化
+        const template = WANTED_TEMPLATES[Math.floor(Math.random() * WANTED_TEMPLATES.length)];
+        document.getElementById('wanted').innerText = template.replace("{item}", wantedItem);
         document.getElementById('msg-bubble').style.color = "black";
 
-        const feintChance = lv === 1 ? 0 : 0.25 + (lv * 0.08);
+        // Lv.8 非表示タイマー
+        if (lv === MAX_LEVEL) {
+            hideWantedTimeout = setTimeout(() => {
+                if (gameActive && !isLocked) document.getElementById('wanted').innerText = "？？？";
+            }, FINAL_LEVEL_DISPLAY_TIME);
+        }
+
+        // ボーナスタイム表示の更新
+        updateBonusDisplay();
+
+        // ボーナスタイム処理（フェイント回避）
+        let feintChance = 0;
+        if (bonusRounds > 0) {
+            feintChance = 0; // フェイント無効
+        } else {
+            feintChance = lv === 1 ? 0 : 0.25 + (lv * 0.08);
+        }
+
         if (lv >= 2 && Math.random() < feintChance) {
             let feintDelay = Math.max(300, 950 - (lv * 70)); 
             feintTimeout = setTimeout(() => {
                 if(!gameActive || isLocked) return;
+                clearTimeout(hideWantedTimeout);
+                
                 let newItem;
                 do { newItem = itemData[Math.floor(Math.random() * itemData.length)].name; } while (newItem === wantedItem);
                 wantedItem = newItem;
                 document.getElementById('wanted').innerText = "あ、やっぱり " + wantedItem + "！";
                 document.getElementById('msg-bubble').style.color = "var(--danger)";
+
+                if (lv === MAX_LEVEL) {
+                    hideWantedTimeout = setTimeout(() => {
+                        if (gameActive && !isLocked) document.getElementById('wanted').innerText = "？？？";
+                    }, FINAL_LEVEL_DISPLAY_TIME);
+                }
             }, feintDelay);
         }
+    }
+
+    function updateComboDisplay() {
+        const cd = document.getElementById('combo-display');
+        if (combo >= 2) {
+            cd.innerText = combo + " COMBO!";
+            cd.classList.remove('combo-anim');
+            void cd.offsetWidth;
+            cd.classList.add('combo-anim');
+        } else {
+            cd.classList.remove('combo-anim');
+            cd.style.opacity = 0;
+        }
+    }
+
+    function updateBonusDisplay() {
+        const bd = document.getElementById('bonus-display');
+        if (bonusRounds > 0) {
+            bd.innerText = "BONUS ×" + bonusRounds;
+            bd.style.opacity = 1;
+        } else {
+            bd.style.opacity = 0;
+        }
+    }
+
+    function showReaction() {
+        clearTimeout(reactionTimeout);
+        const rd = document.getElementById('reaction-display');
+        rd.innerText = REACTIONS[Math.floor(Math.random() * REACTIONS.length)];
+        rd.style.color = "var(--danger)";
+        rd.style.borderColor = "var(--danger)";
+        rd.classList.remove('reaction-anim');
+        void rd.offsetWidth;
+        rd.classList.add('reaction-anim');
+        reactionTimeout = setTimeout(() => {
+            rd.classList.remove('reaction-anim');
+        }, 800);
+    }
+
+    function showBonusReaction() {
+        clearTimeout(reactionTimeout);
+        const rd = document.getElementById('reaction-display');
+        rd.innerText = "ランぬ絶好調！";
+        rd.style.color = "#ff4081";
+        rd.style.borderColor = "#ff4081";
+        rd.classList.remove('reaction-anim');
+        void rd.offsetWidth;
+        rd.classList.add('reaction-anim');
+        reactionTimeout = setTimeout(() => {
+            rd.classList.remove('reaction-anim');
+        }, 1200);
     }
 
     function tapItem(name) {
@@ -235,10 +384,35 @@
         sounds.click();
         if (name === wantedItem) {
             sounds.correct();
+            combo++;
+            if (combo > maxCombo) maxCombo = combo;
+            updateComboDisplay();
+
+            let isBonusTriggered = false;
+            
+            // 先に現在のボーナスを1問分消費
+            if (bonusRounds > 0) {
+                bonusRounds--;
+            }
+            
+            // 連続でボーナスを引き当てる抽選
+            if (bonusRounds === 0 && Math.random() < BONUS_CHANCE) {
+                bonusRounds = 3;
+                isBonusTriggered = true;
+            }
+
+            // 演出の分岐
+            if (isBonusTriggered) {
+                showBonusReaction();
+            } else {
+                showReaction();
+            }
+
             love += 25;
             const av = document.getElementById('avatar-container');
             av.style.transform = "translateY(-10px)";
             setTimeout(() => av.style.transform = "translateY(0)", 150);
+            
             if (love >= 100) {
                  if (lv === MAX_LEVEL) {
                      gameClearTime = elapsed;
@@ -250,6 +424,13 @@
             }
         } else {
             sounds.wrong();
+            combo = 0;
+            updateComboDisplay();
+            
+            if (bonusRounds > 0) {
+                bonusRounds--;
+            }
+            
             applyPenalty();
         }
         updateUI();
@@ -258,6 +439,7 @@
     function applyPenalty() {
         isLocked = true;
         clearTimeout(feintTimeout); 
+        clearTimeout(hideWantedTimeout);
         document.getElementById('avatar-container').classList.add('sulking');
         document.getElementById('avatar-img').classList.add('sulking-filter');
         document.getElementById('msg-bubble').style.backgroundColor = "#f5f5f5";
@@ -286,6 +468,7 @@
         updateBackground();
         sounds.lvUp();
         isLocked = true;
+        clearTimeout(hideWantedTimeout);
         
         let lvMsg = "";
         if (lv === 8) lvMsg = "もっと修行に付き合ってくれ！";
@@ -302,25 +485,58 @@
         }, 1200);
     }
 
-    function gameOver() { sounds.wrong(); gameActive = false; document.getElementById('gameover-screen').style.display = 'flex'; }
+    function gameOver() { 
+        sounds.wrong(); 
+        gameActive = false; 
+        clearTimeout(feintTimeout);
+        clearTimeout(hideWantedTimeout);
+        clearTimeout(reactionTimeout);
+        document.getElementById('gameover-screen').style.display = 'flex'; 
+    }
 
     function finishGame() {
         gameActive = false;
+        clearTimeout(feintTimeout);
+        clearTimeout(hideWantedTimeout);
+        clearTimeout(reactionTimeout);
+        
+        finalScore = Math.max(0, Math.round(SCORE_BASE - (gameClearTime * TIME_SCORE_MULTIPLIER) + (maxCombo * COMBO_SCORE_BONUS)));
+
+        for (let i = 0; i < TITLES.length; i++) {
+            if (finalScore >= TITLES[i].minScore) {
+                currentTitle = TITLES[i].name;
+                break;
+            }
+        }
         
         document.getElementById('final-time').innerText = gameClearTime.toFixed(2) + "s";
+        document.getElementById('final-combo').innerText = maxCombo;
+        document.getElementById('final-score').innerText = finalScore.toLocaleString();
+        document.getElementById('result-title').innerText = "称号：" + currentTitle;
+
         const prevBest = localStorage.getItem('rannu_ta_best');
         if (!prevBest || gameClearTime < parseFloat(prevBest)) {
             localStorage.setItem('rannu_ta_best', gameClearTime);
             document.getElementById('new-record-msg').style.display = 'block';
+        } else {
+            document.getElementById('new-record-msg').style.display = 'none';
         }
+
+        const prevHigh = localStorage.getItem('rannu_ta_high_score');
+        if (!prevHigh || finalScore > parseInt(prevHigh, 10)) {
+            localStorage.setItem('rannu_ta_high_score', finalScore);
+            document.getElementById('new-highscore-msg').style.display = 'block';
+        } else {
+            document.getElementById('new-highscore-msg').style.display = 'none';
+        }
+
         document.getElementById('result-screen').style.display = 'flex';
     }
 
     function updateUI() { document.getElementById('lv').innerText = Math.min(lv, MAX_LEVEL); document.getElementById('exp-bar-fill').style.width = love + "%"; }
+    
     function shareX() {
-        const timeStr = document.getElementById('final-time').innerText;
-        const time = timeStr.replace('s', ''); 
-        const text = encodeURIComponent(`ランぬ、【限界突破】記録${time}で修行完了だ！ #ランぬ修行中`);
+        const text = encodeURIComponent(`ランぬ、【${currentTitle}】SCORE ${finalScore.toLocaleString()}で修行完了だ！\n記録${gameClearTime.toFixed(2)}秒 / 最高${maxCombo} COMBO\n称号：${currentTitle}\n#ランぬ修行中`);
         window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
     }
 </script>
