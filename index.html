@@ -53,6 +53,7 @@
         
         #stage { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; min-height: 200px; }
         #msg-bubble { background: white; padding: 10px 15px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-weight: bold; width: 85%; text-align: center; border: 2px solid var(--p-main); z-index: 5; font-size: 14px; }
+        .wanted-hidden { visibility: hidden; }
         #avatar-container { width: 60%; max-height: 250px; aspect-ratio: 1/1; display: flex; justify-content: center; align-items: flex-end; transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;}
         #avatar-img { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); z-index: 2; position: relative;}
         
@@ -78,6 +79,7 @@
         .item-btn.disabled { opacity: 0.2; pointer-events: none; }
         
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 136, 209, 0.98); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; color: white; text-align: center; padding: 20px; box-sizing: border-box; }
+        .title-img { width: min(80%, 320px); max-height: 160px; object-fit: contain; height: auto; margin-bottom: 10px; }
         .btn-main { margin-top: 20px; padding: 12px 30px; border-radius: 25px; border: none; background: white; color: var(--p-dark); font-weight: bold; cursor: pointer; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.1s; }
         .btn-main:active { transform: scale(0.95); }
         .best-score { margin-top: 10px; font-size: 16px; color: #fff; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; line-height: 1.4; }
@@ -125,6 +127,19 @@
         .record-stamp { display: inline-block; background: #ff5252; color: #fff; font-size: 12px; font-weight: 900; padding: 3px 10px; border-radius: 5px; border: 2px dashed #fff; transform: rotate(-10deg); box-shadow: 2px 2px 5px rgba(0,0,0,0.3); margin-bottom: 10px; }
         .highscore-stamp { background: #ffd700; color: #d50000; border-color: #d50000; font-size: 14px; transform: rotate(-5deg) scale(1.2); margin-bottom: 15px; animation: pulse 1s infinite alternate; }
 
+        /* 短い画面用リザルト最適化 */
+        @media (max-height: 700px) {
+            #result-screen { overflow-y: auto; justify-content: flex-start; }
+            .result-content { padding-top: 10px; padding-bottom: 20px; }
+            .score-box { padding: 5px; margin-bottom: 5px; }
+            .score-value { font-size: 40px; }
+            .stats-cards { margin-bottom: 10px; gap: 8px; }
+            .stats-card { padding: 6px 10px; }
+            .stats-card-value { font-size: 18px; }
+            .title-badge { margin-bottom: 10px; padding: 5px 20px; font-size: 16px; }
+            .btn-main { margin-top: 8px; padding: 8px 25px; font-size: 16px; }
+        }
+
         /* PC用最適化レイアウト */
         @media (min-width: 768px) {
             body { align-items: center; }
@@ -134,8 +149,8 @@
                 border-radius: 24px;
                 box-shadow: 0 15px 50px rgba(0,0,0,0.6);
             }
-            #tray-scroll-area { height: 120px; overflow: hidden; }
-            #tray { grid-template-columns: repeat(6, 1fr); max-width: 700px; margin: 0 auto; padding: 15px 20px; }
+            #tray-scroll-area { height: 200px; overflow: hidden; }
+            #tray { grid-template-columns: repeat(3, 1fr); max-width: 600px; margin: 0 auto; padding: 12px 20px 20px; }
             #msg-bubble { max-width: 500px; font-size: 16px; margin-bottom: 25px; }
             #avatar-container { width: 240px; }
             .result-content { max-width: 550px; }
@@ -246,7 +261,7 @@
     const TIME_SCORE_MULTIPLIER = 1000;
     const COMBO_SCORE_BONUS = 300;
 
-    const FINAL_LEVEL_DISPLAY_TIME = 800; // 0.8秒へ変更
+    const FINAL_LEVEL_DISPLAY_TIME = 800; // 0.8秒
     const BONUS_CHANCE = 0.02;
     
     let love = 0, lv = 1, wantedItem = "", isLocked = false, startTime = 0, gameActive = false, feintTimeout = null, gameClearTime = 0;
@@ -320,6 +335,7 @@
         startTime = Date.now();
         love = 0; lv = 1; isLocked = false;
         combo = 0; maxCombo = 0; finalScore = 0; bonusRounds = 0;
+        document.getElementById('wanted').classList.remove('wanted-hidden');
         updateComboDisplay();
         updateBonusDisplay();
         updateBackground();
@@ -350,19 +366,22 @@
         clearTimeout(feintTimeout);
         clearTimeout(hideWantedTimeout);
 
+        const wantedEl = document.getElementById('wanted');
+        wantedEl.classList.remove('wanted-hidden');
+
         const randIndex = Math.floor(Math.random() * itemData.length);
         wantedItem = itemData[randIndex].name;
         
-        // 要求文ランダム化とテンプレートの保持
+        // 要求文ランダム化
         const template = WANTED_TEMPLATES[Math.floor(Math.random() * WANTED_TEMPLATES.length)];
-        document.getElementById('wanted').innerText = template.replace("{item}", wantedItem);
+        wantedEl.innerText = template.replace("{item}", wantedItem);
         document.getElementById('msg-bubble').style.color = "black";
 
-        // Lv.8 非表示タイマー（文章構造を維持してアイテム名のみ伏せる）
+        // Lv.8 非表示タイマー（文章全体を完全に見えなくする）
         if (lv === MAX_LEVEL) {
             hideWantedTimeout = setTimeout(() => {
                 if (gameActive && !isLocked) {
-                    document.getElementById('wanted').innerText = template.replace("{item}", "？？？");
+                    wantedEl.classList.add('wanted-hidden');
                 }
             }, FINAL_LEVEL_DISPLAY_TIME);
         }
@@ -387,14 +406,16 @@
                 let newItem;
                 do { newItem = itemData[Math.floor(Math.random() * itemData.length)].name; } while (newItem === wantedItem);
                 wantedItem = newItem;
-                document.getElementById('wanted').innerText = "あ、やっぱり " + wantedItem + "！";
+                
+                wantedEl.classList.remove('wanted-hidden');
+                wantedEl.innerText = "あ、やっぱり " + wantedItem + "！";
                 document.getElementById('msg-bubble').style.color = "var(--danger)";
 
                 // フェイント後もLv.8なら非表示タイマーを再設定
                 if (lv === MAX_LEVEL) {
                     hideWantedTimeout = setTimeout(() => {
                         if (gameActive && !isLocked) {
-                            document.getElementById('wanted').innerText = "あ、やっぱり ？？？！";
+                            wantedEl.classList.add('wanted-hidden');
                         }
                     }, FINAL_LEVEL_DISPLAY_TIME);
                 }
@@ -556,10 +577,12 @@
         isLocked = true;
         clearTimeout(feintTimeout); 
         clearTimeout(hideWantedTimeout);
+        const wantedEl = document.getElementById('wanted');
+        wantedEl.classList.remove('wanted-hidden');
         document.getElementById('avatar-container').classList.add('sulking');
         document.getElementById('avatar-img').classList.add('sulking-filter');
         document.getElementById('msg-bubble').style.backgroundColor = "#f5f5f5";
-        document.getElementById('wanted').innerText = "えっ、それじゃないぞ！";
+        wantedEl.innerText = "えっ、それじゃないぞ！";
         document.querySelectorAll('.item-btn').forEach(b => b.classList.add('disabled'));
         setTimeout(() => {
             if (!gameActive) return;
@@ -586,11 +609,14 @@
         isLocked = true;
         clearTimeout(hideWantedTimeout);
         
+        const wantedEl = document.getElementById('wanted');
+        wantedEl.classList.remove('wanted-hidden');
+
         let lvMsg = "";
         if (lv === 8) lvMsg = "もっと修行に付き合ってくれ！";
         else lvMsg = "ありがとう！俺、もっとやれるぞ！";
         
-        document.getElementById('wanted').innerText = lvMsg;
+        wantedEl.innerText = lvMsg;
         
         setTimeout(() => { 
             if (!gameActive) return; 
