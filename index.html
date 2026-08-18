@@ -164,7 +164,7 @@
         <img src="title.png" alt="タイトル" class="title-img">
         <p style="font-size: 14px;">ランぬの要求にこたえて修行のお手伝い！<br>ぬい界の頂点を目指せ！</p>
         <div id="best-score-display" class="best-score">BEST TIME<br>--.--s<br><br>HIGH SCORE<br>-----</div>
-        <img src="avatar.png" alt="ランぬ" style="max-width: 120px; height: auto; margin: 10px 0 15px 0;">
+        <img src="avatar.png" alt="ランぬ" style="max-width: 200px; height: auto; margin: 10px 0 15px 0;">
         <button class="btn-main" onclick="initAudio(); startGame();">修行をはじめる！</button>
     </div>
 
@@ -372,7 +372,7 @@
         const randIndex = Math.floor(Math.random() * itemData.length);
         wantedItem = itemData[randIndex].name;
         
-        // 要求文ランダム化
+        // 要求文ランダム化とテンプレートの保持
         const template = WANTED_TEMPLATES[Math.floor(Math.random() * WANTED_TEMPLATES.length)];
         wantedEl.innerText = template.replace("{item}", wantedItem);
         document.getElementById('msg-bubble').style.color = "black";
