@@ -335,15 +335,17 @@
         const randIndex = Math.floor(Math.random() * itemData.length);
         wantedItem = itemData[randIndex].name;
         
-        // 要求文ランダム化
+        // 要求文ランダム化とテンプレートの保持
         const template = WANTED_TEMPLATES[Math.floor(Math.random() * WANTED_TEMPLATES.length)];
         document.getElementById('wanted').innerText = template.replace("{item}", wantedItem);
         document.getElementById('msg-bubble').style.color = "black";
 
-        // Lv.8 非表示タイマー
+        // Lv.8 非表示タイマー（文章構造を維持してアイテム名のみ伏せる）
         if (lv === MAX_LEVEL) {
             hideWantedTimeout = setTimeout(() => {
-                if (gameActive && !isLocked) document.getElementById('wanted').innerText = "？？？";
+                if (gameActive && !isLocked) {
+                    document.getElementById('wanted').innerText = template.replace("{item}", "？？？");
+                }
             }, FINAL_LEVEL_DISPLAY_TIME);
         }
 
@@ -370,9 +372,12 @@
                 document.getElementById('wanted').innerText = "あ、やっぱり " + wantedItem + "！";
                 document.getElementById('msg-bubble').style.color = "var(--danger)";
 
+                // フェイント後もLv.8なら非表示タイマーを再設定
                 if (lv === MAX_LEVEL) {
                     hideWantedTimeout = setTimeout(() => {
-                        if (gameActive && !isLocked) document.getElementById('wanted').innerText = "？？？";
+                        if (gameActive && !isLocked) {
+                            document.getElementById('wanted').innerText = "あ、やっぱり ？？？！";
+                        }
                     }, FINAL_LEVEL_DISPLAY_TIME);
                 }
             }, feintDelay);
