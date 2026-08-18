@@ -79,15 +79,36 @@
         .item-btn.disabled { opacity: 0.2; pointer-events: none; }
         
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 136, 209, 0.98); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; color: white; text-align: center; padding: 20px; box-sizing: border-box; }
-        .title-img { width: min(80%, 320px); max-height: 160px; object-fit: contain; height: auto; margin-bottom: 10px; }
-        .btn-main { margin-top: 20px; padding: 12px 30px; border-radius: 25px; border: none; background: white; color: var(--p-dark); font-weight: bold; cursor: pointer; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.1s; }
-        .btn-main:active { transform: scale(0.95); }
-        .best-score { margin-top: 10px; font-size: 16px; color: #fff; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; line-height: 1.4; }
+        
+        /* スタート画面・リザルト画面共通 華やか背景 */
+        .overlay-bg { background: linear-gradient(135deg, rgba(2, 136, 209, 0.95), rgba(129, 212, 250, 0.95)); }
+        .bg-effects { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.3) 2px, transparent 3px); background-size: 40px 40px; animation: bgScroll 30s linear infinite; }
+        @keyframes bgScroll { 0% { background-position: 0 0; } 100% { background-position: 120px 120px; } }
+
+        /* タイトル・スタート画面要素 */
+        .start-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .title-img { width: min(80%, 320px); max-height: 160px; object-fit: contain; height: auto; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); animation: floatTitle 3s ease-in-out infinite; }
+        @keyframes floatTitle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        
+        .start-desc { font-size: 15px; font-weight: bold; color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); margin-bottom: 20px; line-height: 1.5; }
+        
+        .start-avatar { max-width: 170px; height: auto; margin-bottom: 25px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); animation: floatAvatar 4s ease-in-out infinite; position: relative; }
+        @keyframes floatAvatar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        .avatar-glow { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%); border-radius: 50%; z-index: -1; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+
+        .start-cards { display: flex; gap: 10px; margin-bottom: 30px; width: 95%; max-width: 400px; justify-content: center; }
+        .start-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.5); border-radius: 12px; padding: 10px; flex: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .start-card-title { font-size: 11px; color: #e0f7fa; font-weight: bold; margin-bottom: 5px; }
+        .start-card-value { font-size: 20px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); }
+
+        .btn-main { padding: 15px 40px; border-radius: 30px; border: 2px solid #fff; background: linear-gradient(to bottom, #ffffff, #e0f7fa); color: var(--p-dark); font-weight: 900; cursor: pointer; font-size: 20px; box-shadow: 0 6px 15px rgba(0,0,0,0.3), inset 0 -3px 0 rgba(0,0,0,0.1); transition: transform 0.1s, box-shadow 0.1s; }
+        .btn-main:active { transform: scale(0.95) translateY(2px); box-shadow: 0 2px 5px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(0,0,0,0.1); }
+        
         .sulking { animation: shake 0.1s infinite; }
         .sulking-filter { filter: grayscale(1) contrast(1.2) opacity(0.7) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
 
-        
+        /* コンボ表示（段階的な派手さ + 一瞬表示） */
         .combo-text { position: absolute; top: 100px; right: 20px; font-size: 24px; font-weight: bold; color: #ff9800; text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; pointer-events: none; opacity: 0; transition: transform 0.1s, opacity 0.2s; z-index: 10; transform: scale(1); transform-origin: center right; }
         .combo-anim { transform: scale(1.3) !important; opacity: 1 !important; }
         .combo-lvl2 { color: #ff3d00; text-shadow: 0 0 10px #ffeb3b, 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; font-size: 28px; }
@@ -103,41 +124,66 @@
         .reaction-anim { animation: stampAnim 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes stampAnim { 0% { transform: translateX(-50%) scale(0.2) rotate(10deg); opacity: 0; } 30% { transform: translateX(-50%) scale(1.2) rotate(-5deg); opacity: 1; } 70% { transform: translateX(-50%) scale(1) rotate(-5deg) translateY(0px); opacity: 1; } 100% { transform: translateX(-50%) scale(1) rotate(-5deg) translateY(-30px); opacity: 0; } }
 
-        /* リザルト画面専用スタイル */
-        #result-screen { background: linear-gradient(135deg, rgba(2, 136, 209, 0.95), rgba(129, 212, 250, 0.95)); }
-        .result-bg-effects { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background-image: radial-gradient(circle, rgba(255,255,255,0.2) 2px, transparent 3px); background-size: 30px 30px; animation: bgScroll 20s linear infinite; }
-        @keyframes bgScroll { 0% { background-position: 0 0; } 100% { background-position: 100px 100px; } }
-        
+        /* リザルト画面コンテンツ */
         .result-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; }
         
-        .score-box { background: radial-gradient(ellipse at center, rgba(255,215,0,0.3) 0%, transparent 70%); padding: 20px; margin-bottom: 15px; }
+        .score-box { background: radial-gradient(ellipse at center, rgba(255,215,0,0.3) 0%, transparent 70%); padding: 15px 20px; margin-bottom: 15px; }
         .score-label { font-size: 18px; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); letter-spacing: 2px; }
-        .score-value { font-size: 54px; font-weight: 900; color: #fff; text-shadow: 0 0 20px #ffeb3b, 0 4px 0 #e65100; background: linear-gradient(to bottom, #fff, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .score-value { font-size: 54px; font-weight: 900; color: #fff; text-shadow: 0 0 20px #ffeb3b, 0 4px 0 #e65100; background: linear-gradient(to bottom, #fff, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1; }
         
         .stats-cards { display: flex; gap: 15px; margin-bottom: 20px; width: 90%; justify-content: center; }
         .stats-card { background: rgba(255,255,255,0.15); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.3); border-radius: 15px; padding: 10px 15px; width: 45%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .stats-card-title { font-size: 12px; color: #e0f7fa; margin-bottom: 5px; }
-        .stats-card-value { font-size: 22px; font-weight: bold; color: #fff; }
+        .stats-card-title { font-size: 12px; color: #e0f7fa; margin-bottom: 5px; font-weight: bold;}
+        .stats-card-value { font-size: 20px; font-weight: bold; color: #fff; }
         
-        .title-badge { background: linear-gradient(135deg, #ff4081, #d500f9); border: 2px solid #ffd700; border-radius: 30px; padding: 8px 25px; box-shadow: 0 0 15px rgba(255,215,0,0.5), inset 0 0 10px rgba(255,255,255,0.5); font-size: 20px; font-weight: bold; margin-bottom: 20px; position: relative; }
+        .title-badge { background: linear-gradient(135deg, #ff4081, #d500f9); border: 2px solid #ffd700; border-radius: 30px; padding: 8px 25px; box-shadow: 0 0 15px rgba(255,215,0,0.5), inset 0 0 10px rgba(255,255,255,0.5); font-size: 20px; font-weight: bold; margin-bottom: 15px; position: relative; color: white;}
         .title-badge::before, .title-badge::after { content: '★'; position: absolute; top: 50%; transform: translateY(-50%); color: #ffd700; font-size: 14px; }
         .title-badge::before { left: 10px; }
         .title-badge::after { right: 10px; }
 
+        /* ぬい界の頂点 専用スタイル */
+        .title-top { background: linear-gradient(135deg, #ffb300, #ffea00) !important; color: #d50000 !important; border: 3px solid #fff !important; box-shadow: 0 0 25px #ffeb3b, inset 0 0 15px rgba(255,255,255,0.8) !important; animation: topBadgePulse 1.5s infinite alternate; text-shadow: 1px 1px 0px rgba(255,255,255,0.8); }
+        .title-top::before { content: '👑' !important; font-size: 18px !important; color: #d50000 !important;}
+        .title-top::after { content: '👑' !important; font-size: 18px !important; color: #d50000 !important;}
+        @keyframes topBadgePulse { 0% { transform: scale(1); box-shadow: 0 0 15px #ffeb3b, inset 0 0 10px rgba(255,255,255,0.5); } 100% { transform: scale(1.05); box-shadow: 0 0 30px #ffeb3b, inset 0 0 20px rgba(255,255,255,0.9); } }
+
+        /* 特殊メッセージ */
+        .result-message { background: rgba(255,255,255,0.9); border: 2px solid var(--p-main); border-radius: 20px; padding: 12px 18px; font-size: 15px; font-weight: bold; color: var(--p-dark); width: 85%; max-width: 350px; text-align: center; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); position: relative; animation: msgPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0;}
+        .result-message::after { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); border-width: 0 10px 10px 10px; border-style: solid; border-color: transparent transparent var(--p-main) transparent; }
+        @keyframes msgPop { 0% { transform: translateY(20px) scale(0.9); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+
         .record-stamp { display: inline-block; background: #ff5252; color: #fff; font-size: 12px; font-weight: 900; padding: 3px 10px; border-radius: 5px; border: 2px dashed #fff; transform: rotate(-10deg); box-shadow: 2px 2px 5px rgba(0,0,0,0.3); margin-bottom: 10px; }
         .highscore-stamp { background: #ffd700; color: #d50000; border-color: #d50000; font-size: 14px; transform: rotate(-5deg) scale(1.2); margin-bottom: 15px; animation: pulse 1s infinite alternate; }
 
-        /* 短い画面用リザルト最適化 */
+        .btn-sub { margin-top: 10px; padding: 10px 30px; border-radius: 25px; border: none; background: white; color: var(--p-dark); font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.1s; }
+        .btn-sub:active { transform: scale(0.95); }
+
+        /* 短い画面用（スタート・リザルト共通）最適化 */
         @media (max-height: 700px) {
+            #start-screen { overflow-y: auto; justify-content: flex-start; padding-top: 20px; padding-bottom: 20px;}
+            .title-img { max-height: 120px; margin-bottom: 10px; }
+            .start-desc { font-size: 13px; margin-bottom: 15px; }
+            .start-avatar { max-width: 140px; margin-bottom: 15px; }
+            .start-cards { margin-bottom: 20px; gap: 8px; }
+            .start-card { padding: 8px; }
+            .start-card-title { font-size: 10px; margin-bottom: 2px;}
+            .start-card-value { font-size: 16px; }
+            .btn-main { padding: 12px 30px; font-size: 18px; }
+
             #result-screen { overflow-y: auto; justify-content: flex-start; }
-            .result-content { padding-top: 10px; padding-bottom: 20px; }
-            .score-box { padding: 5px; margin-bottom: 5px; }
-            .score-value { font-size: 40px; }
-            .stats-cards { margin-bottom: 10px; gap: 8px; }
-            .stats-card { padding: 6px 10px; }
+            .result-content { padding-top: 15px; padding-bottom: 20px; }
+            .result-content > h1 { font-size: 26px; margin-bottom: 0;}
+            .score-box { padding: 10px; margin-bottom: 10px; }
+            .score-label { font-size: 14px; }
+            .score-value { font-size: 42px; }
+            .stats-cards { margin-bottom: 15px; gap: 10px; }
+            .stats-card { padding: 8px 12px; }
+            .stats-card-title { font-size: 11px; margin-bottom: 2px;}
             .stats-card-value { font-size: 18px; }
-            .title-badge { margin-bottom: 10px; padding: 5px 20px; font-size: 16px; }
-            .btn-main { margin-top: 8px; padding: 8px 25px; font-size: 16px; }
+            .title-badge { margin-bottom: 15px; padding: 6px 20px; font-size: 18px; }
+            .result-message { font-size: 14px; padding: 10px 15px; margin-bottom: 15px; }
+            .btn-sub { margin-top: 8px; padding: 8px 25px; font-size: 15px; }
+            .highscore-stamp { margin-bottom: 10px; }
         }
 
         /* PC用最適化レイアウト */
@@ -154,18 +200,41 @@
             #msg-bubble { max-width: 500px; font-size: 16px; margin-bottom: 25px; }
             #avatar-container { width: 240px; }
             .result-content { max-width: 550px; }
+            .start-avatar { max-width: 180px; }
+            .btn-main:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.4), inset 0 -3px 0 rgba(0,0,0,0.1); }
+            .btn-sub:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
         }
     </style>
 </head>
 <body>
 
 <div id="game-container" class="bg-lv1">
-    <div id="start-screen" class="overlay">
-        <img src="title.png" alt="タイトル" class="title-img">
-        <p style="font-size: 14px;">ランぬの要求にこたえて修行のお手伝い！<br>ぬい界の頂点を目指せ！</p>
-        <div id="best-score-display" class="best-score">BEST TIME<br>--.--s<br><br>HIGH SCORE<br>-----</div>
-        <img src="avatar.png" alt="ランぬ" style="max-width: 200px; height: auto; margin: 10px 0 15px 0;">
-        <button class="btn-main" onclick="initAudio(); startGame();">修行をはじめる！</button>
+    <div id="start-screen" class="overlay overlay-bg">
+        <div class="bg-effects"></div>
+        <div class="start-content">
+            <img src="title.png" alt="タイトル" class="title-img">
+            <div class="start-desc">
+                ランぬと一緒に修行！<br>ぬい界の頂点を目指せ！
+            </div>
+            
+            <div style="position: relative;">
+                <div class="avatar-glow"></div>
+                <img src="avatar.png" alt="ランぬ" class="start-avatar">
+            </div>
+
+            <div class="start-cards">
+                <div class="start-card">
+                    <div class="start-card-title">BEST TIME</div>
+                    <div id="best-time-value" class="start-card-value">--.--s</div>
+                </div>
+                <div class="start-card">
+                    <div class="start-card-title">HIGH SCORE</div>
+                    <div id="high-score-value" class="start-card-value">-----</div>
+                </div>
+            </div>
+
+            <button class="btn-main" onclick="initAudio(); startGame();">✨ 修行をはじめる！</button>
+        </div>
     </div>
 
     <div id="gameover-screen" class="overlay" style="display: none; background: rgba(0,0,0,0.9);">
@@ -173,10 +242,10 @@
         <button class="btn-main" onclick="location.reload()">リベンジだ！</button>
     </div>
 
-    <div id="result-screen" class="overlay" style="display: none;">
-        <div class="result-bg-effects"></div>
+    <div id="result-screen" class="overlay overlay-bg" style="display: none;">
+        <div class="bg-effects"></div>
         <div class="result-content">
-            <h1 style="font-size: 32px; margin: 0 0 5px 0; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);">修行完了！</h1>
+            <h1 style="font-size: 32px; margin: 0 0 10px 0; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);">修行完了！</h1>
             
             <div class="score-box">
                 <div class="score-label">SCORE</div>
@@ -196,12 +265,14 @@
             
             <div id="result-title" class="title-badge"></div>
             
+            <div id="result-message" class="result-message"></div>
+
             <div id="new-record-msg" class="record-stamp" style="display: none;">New Record!</div>
             <div id="new-highscore-msg" class="record-stamp highscore-stamp" style="display: none;">NEW HIGH SCORE!</div>
             
-            <button class="btn-main" onclick="shareX()" style="background: #1DA1F2; color: white; border: none; margin-top: 10px;">報告する</button>
-            <button class="btn-main" onclick="location.reload()" style="margin-top: 10px;">リトライ</button>
-            <button onclick="location.reload()" style="background:none; border:none; color:white; margin-top:20px; text-decoration:underline; cursor:pointer; font-size:14px;">タイトルへ</button>
+            <button class="btn-sub" onclick="shareX()" style="background: #1DA1F2; color: white; border: none; margin-top: 5px;">報告する</button>
+            <button class="btn-sub" onclick="location.reload()">リトライ</button>
+            <button onclick="location.reload()" style="background:none; border:none; color:white; margin-top:15px; text-decoration:underline; cursor:pointer; font-size:14px; z-index: 10;">タイトルへ</button>
         </div>
     </div>
 
@@ -270,27 +341,27 @@
     let finalScore = 0;
     let hideWantedTimeout = null;
     let reactionTimeout = null;
-    let comboDisplayTimeout = null; // コンボ表示自動消滅用
+    let comboDisplayTimeout = null;
     let bonusRounds = 0;
     let currentTitle = "";
 
     const WANTED_TEMPLATES = [
-        "{item}を頼む！", 
-        "{item}が欲しいぞ！", 
-        "{item}を持ってきてくれ！", 
-        "{item}をよろしく頼む！！", 
-        "う〜ん、{item} だ！"
+        "{item} を頼む！", 
+        "{item}！", 
+        "{item}持ってきてくれ！", 
+        "{item}が欲しい！", 
+        "次は {item} だ！"
     ];
 
     const REACTIONS = [
-        "それだ！", "さすがだな！", "はやい！", "いいぞ！", "よし、次だ！", "その調子！"
+        "それだ！", "さすがだな！", "早い！", "いいぞ！", "よし、次だ！", "その調子！"
     ];
 
     const TITLES = [
-        { minScore: 90000, name: "限界突破" },
-        { minScore: 80000, name: "ぬい界の頂点" },
-        { minScore: 70000, name: "修行の達人" },
-        { minScore: 60000, name: "修行仲間" },
+        { minScore: 55000, name: "ぬい界の頂点" },
+        { minScore: 45000, name: "達人ぬい" },
+        { minScore: 35000, name: "一人前のぬい" },
+        { minScore: 25000, name: "修行中ぬい" },
         { minScore: 0,     name: "ぬい界の見習い" }
     ];
 
@@ -303,10 +374,9 @@
         const bestTime = localStorage.getItem('rannu_ta_best');
         const highScore = localStorage.getItem('rannu_ta_high_score');
         
-        const bestTimeStr = bestTime ? `${parseFloat(bestTime).toFixed(2)}s` : "--.--s";
-        const highScoreStr = highScore ? parseInt(highScore, 10).toLocaleString() : "-----";
+        document.getElementById('best-time-value').innerText = bestTime ? `${parseFloat(bestTime).toFixed(2)}s` : "--.--s";
+        document.getElementById('high-score-value').innerText = highScore ? parseInt(highScore, 10).toLocaleString() : "-----";
         
-        document.getElementById('best-score-display').innerHTML = `BEST TIME<br>${bestTimeStr}<br><br>HIGH SCORE<br>${highScoreStr}`;
         renderButtons();
     };
 
@@ -372,12 +442,12 @@
         const randIndex = Math.floor(Math.random() * itemData.length);
         wantedItem = itemData[randIndex].name;
         
-        // 要求文ランダム化とテンプレートの保持
+        // 要求文ランダム化
         const template = WANTED_TEMPLATES[Math.floor(Math.random() * WANTED_TEMPLATES.length)];
         wantedEl.innerText = template.replace("{item}", wantedItem);
         document.getElementById('msg-bubble').style.color = "black";
 
-        // Lv.8 非表示タイマー（文章全体を完全に見えなくする）
+        // Lv.8 非表示タイマー（文章全体を見えなくする）
         if (lv === MAX_LEVEL) {
             hideWantedTimeout = setTimeout(() => {
                 if (gameActive && !isLocked) {
@@ -392,7 +462,7 @@
         // ボーナスタイム処理（フェイント回避）
         let feintChance = 0;
         if (bonusRounds > 0) {
-            feintChance = 0; // フェイント無効
+            feintChance = 0; 
         } else {
             feintChance = lv === 1 ? 0 : 0.25 + (lv * 0.08);
         }
@@ -489,13 +559,11 @@
     function createParticles() {
         const container = document.getElementById('avatar-container');
         
-        // フラッシュリング
         const ring = document.createElement('div');
         ring.className = 'ring-flash';
         container.appendChild(ring);
         setTimeout(() => ring.remove(), 600);
 
-        // パーティクル（星や丸）
         for(let i = 0; i < 6; i++) {
             const p = document.createElement('div');
             p.className = 'particle ' + (Math.random() > 0.5 ? 'star' : 'sparkle');
@@ -526,18 +594,15 @@
 
             let isBonusTriggered = false;
             
-            // 先に現在のボーナスを1問分消費
             if (bonusRounds > 0) {
                 bonusRounds--;
             }
             
-            // 連続でボーナスを引き当てる抽選
             if (bonusRounds === 0 && Math.random() < BONUS_CHANCE) {
                 bonusRounds = 3;
                 isBonusTriggered = true;
             }
 
-            // 演出の分岐
             createParticles();
             if (isBonusTriggered) {
                 showBonusReaction();
@@ -643,7 +708,6 @@
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            // イージング（easeOutExpo的）
             const currentScore = Math.floor(targetScore * (1 === progress ? 1 : 1 - Math.pow(2, -10 * progress)));
             scoreElement.innerText = currentScore.toLocaleString();
             if (progress < 1) {
@@ -653,6 +717,16 @@
             }
         };
         window.requestAnimationFrame(step);
+    }
+
+    function getResultMessage() {
+        if (maxCombo === 32) return "一度も途切れなかったな！完璧だ！";
+        if (gameClearTime <= 30) return "速すぎるだろ！？俺が追いつけないぞ！";
+        if (finalScore >= 55000) return "ついにぬい界の頂点だ！ここまで付き合ってくれてありがとな！";
+        if (finalScore >= 45000) return "すごいぞ！もう立派な達人ぬいだな！";
+        if (finalScore >= 35000) return "もう一人前だな！いい修行だったぞ！";
+        if (finalScore >= 25000) return "いい調子だ！このまま修行を続けよう！";
+        return "まだまだこれからだ！一緒にもっと修行しよう！";
     }
 
     function finishGame() {
@@ -673,7 +747,16 @@
         
         document.getElementById('final-time').innerText = gameClearTime.toFixed(2);
         document.getElementById('final-combo').innerText = maxCombo;
-        document.getElementById('result-title').innerText = currentTitle;
+        
+        const titleBadge = document.getElementById('result-title');
+        titleBadge.innerText = "★ " + currentTitle + " ★";
+        if (currentTitle === "ぬい界の頂点") {
+            titleBadge.classList.add('title-top');
+        } else {
+            titleBadge.classList.remove('title-top');
+        }
+
+        document.getElementById('result-message').innerText = getResultMessage();
 
         const prevBest = localStorage.getItem('rannu_ta_best');
         if (!prevBest || gameClearTime < parseFloat(prevBest)) {
@@ -692,7 +775,6 @@
         }
 
         document.getElementById('result-screen').style.display = 'flex';
-        // スコアのカウントアップアニメーション（0.8秒）
         animateScore(finalScore, 800);
     }
 
