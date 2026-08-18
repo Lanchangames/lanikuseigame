@@ -88,16 +88,16 @@
         /* タイトル・スタート画面要素 */
         #start-screen { justify-content: flex-start; overflow-y: auto; }
         .start-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: auto; margin-bottom: auto; padding: 20px 0; flex-shrink: 0; }
-        .title-img { width: min(90%, 360px); max-height: 190px; object-fit: contain; height: auto; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); animation: floatTitle 3s ease-in-out infinite; }
+        .title-img { width: min(90%, 360px); max-height: 190px; object-fit: contain; height: auto; margin-bottom: 12px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); animation: floatTitle 3s ease-in-out infinite; }
         @keyframes floatTitle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         
-        .start-desc { font-size: 15px; font-weight: bold; color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); margin-bottom: 15px; line-height: 1.5; }
+        .start-desc { font-size: 15px; font-weight: bold; color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); margin-bottom: 12px; line-height: 1.5; }
         
-        .start-avatar { max-width: 195px; height: auto; margin-bottom: 20px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); animation: floatAvatar 4s ease-in-out infinite; position: relative; }
+        .start-avatar { max-width: 195px; height: auto; margin-bottom: 15px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); animation: floatAvatar 4s ease-in-out infinite; position: relative; }
         @keyframes floatAvatar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
         .avatar-glow { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%); border-radius: 50%; z-index: -1; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 
-        .start-cards { display: flex; gap: 10px; margin-bottom: 25px; width: 95%; max-width: 400px; justify-content: center; }
+        .start-cards { display: flex; gap: 10px; margin-bottom: 20px; width: 95%; max-width: 400px; justify-content: center; }
         .start-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.5); border-radius: 12px; padding: 10px; flex: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .start-card-title { font-size: 11px; color: #e0f7fa; font-weight: bold; margin-bottom: 5px; }
         .start-card-value { font-size: 20px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); }
@@ -117,7 +117,7 @@
         .combo-lvl4 { background: linear-gradient(45deg, #ff0000, #ffeb3b, #00e5ff, #d500f9); -webkit-background-clip: text; color: transparent; text-shadow: 0 0 25px rgba(255,255,255,0.8); font-size: 40px; animation: rainbowText 2s linear infinite; }
         @keyframes rainbowText { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
 
-        /* ボーナス表示（タイマーエリア付近に移動） */
+        /* ボーナス表示 */
         .bonus-text { display: inline-block; font-size: 12px; font-weight: bold; color: #ff4081; background: rgba(255,255,255,0.9); padding: 2px 8px; border-radius: 10px; border: 2px solid #ff4081; pointer-events: none; opacity: 0; transition: opacity 0.2s; margin-left: 10px; }
         
         /* リアクションスタンプ表示 */
@@ -161,20 +161,18 @@
 
         /* INFOリンク & モーダル */
         .info-link {
-    margin-top: 15px;
-    color: #fff;
-    font-size: 15px;
-    font-weight: bold;
-    text-decoration: none;
-    cursor: pointer;
-
-    background: rgba(255,255,255,0.18);
-    border: 1px solid rgba(255,255,255,0.55);
-    border-radius: 16px;
-    padding: 6px 14px;
-
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-}
+            margin-top: 15px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.55);
+            border-radius: 16px;
+            padding: 6px 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
         .info-link:hover { color: #fff; }
         
         .info-modal-content { background: rgba(255,255,255,0.95); width: 90%; max-width: 400px; max-height: 85%; border-radius: 15px; padding: 25px 20px; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.3); overflow-y: auto; position: relative; color: #333; text-align: left; }
@@ -187,14 +185,14 @@
 
         /* 短い画面用（スタート・リザルト共通）最適化 */
         @media (max-height: 700px) {
-            .title-img { max-height: 145px; margin-bottom: 10px; }
-            .start-desc { font-size: 13px; margin-bottom: 10px; }
-            .start-avatar { max-width: 160px; margin-bottom: 15px; }
+            .title-img { max-height: 145px; margin-bottom: 8px; }
+            .start-desc { font-size: 13px; margin-bottom: 8px; }
+            .start-avatar { max-width: 160px; margin-bottom: 10px; }
             .start-cards { margin-bottom: 15px; gap: 8px; }
             .start-card { padding: 6px 8px; }
             .start-card-title { font-size: 10px; margin-bottom: 2px;}
             .start-card-value { font-size: 16px; }
-            .btn-main { margin-top: 8px; padding: 12px 25px; font-size: 16px; }
+            .btn-main { padding: 12px 25px; font-size: 16px; }
 
             #result-screen { overflow-y: auto; justify-content: flex-start; }
             .result-content { padding-top: 15px; padding-bottom: 20px; }
@@ -240,7 +238,7 @@
         <div class="start-content">
             <img src="title.png" alt="タイトル" class="title-img">
             <div class="start-desc" style="text-align: center;">
-                ランぬと一緒に修行しよう！<br>ぬい界の頂点を目指せ！
+                ランぬと一緒に修行！<br>ぬい界の頂点を目指せ！
             </div>
             
             <div style="position: relative;">
@@ -273,13 +271,12 @@
             <section class="info-section">
                 <h3>■ 遊び方</h3>
                 <p>
-                    ⭐︎非公式二次創作ゲームです⭐︎
                     ランぬが欲しがっているものを選ぼう！<br><br>
                     正解すると修行が進みます。<br>
                     間違えると少しの間動けなくなります。<br><br>
-                    レベルが上がるとフェイントや配置シャッフルが発生！<br>
-                    レベル8では要求がすぐに消えるので、よく覚えよう。<br><br>
-                    レベル8をクリアすれば修行完了！<br>
+                    Lv.が上がるとフェイントや配置シャッフルが発生！<br>
+                    Lv.8では要求がすぐに消えるので、よく覚えよう。<br><br>
+                    Lv.8をクリアすれば修行完了！<br>
                     タイムとコンボでSCOREが決まります。
                 </p>
             </section>
@@ -287,15 +284,15 @@
             <section class="info-section">
                 <h3>■ CREDIT</h3>
                 <p>
-                    ゲーム制作：ろかス<br>
-                    ランぬ素体：水田しち
+                    ゲーム制作：ここに記載<br>
+                    ランぬ素体：ここに記載
                 </p>
             </section>
 
             <section class="info-section">
                 <h3>■ お問い合わせ</h3>
                 <p>
-                    <a href="https://marshmallow-qa.com/oj0afz3donoawsc" id="contact-link" target="_blank" rel="noopener">不具合報告・お問い合わせはこちら</a>
+                    <a href="#" id="contact-link" target="_blank" rel="noopener">不具合報告・お問い合わせはこちら</a>
                 </p>
             </section>
         </div>
@@ -795,7 +792,7 @@
 
     function getResultMessage() {
         if (maxCombo === 32) return "一度も途切れなかったな！完璧だ！";
-        if (gameClearTime <= 50) return "俺についてこれるとは…速すぎる！";
+        if (gameClearTime <= 30) return "速すぎるだろ！？俺が追いつけないぞ！";
         if (finalScore >= 55000) return "ついにぬい界の頂点だ！ここまで付き合ってくれてありがとな！";
         if (finalScore >= 45000) return "すごいぞ！もう立派な達人ぬいだな！";
         if (finalScore >= 35000) return "もう一人前だな！いい修行だったぞ！";
