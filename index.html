@@ -71,7 +71,7 @@
         }
 
         #tray-scroll-area { flex-shrink: 0; height: 200px; background: rgba(255,255,255,0.5); border-top: 1px solid rgba(0,0,0,0.1); overflow-y: auto; }
-        #tray {grid-template-columns: repeat(3, 1fr);max-width: 600px;width: 100%;margin: 0 auto;padding: 12px 20px 20px; box-sizing: border-box;}
+        #tray { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px 12px 30px; }
         .item-btn { border: 1px solid rgba(0,0,0,0.1); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80px; cursor: pointer; background: white; transition: 0.1s; }
         .item-label { font-size: 9px; font-weight: bold; color: #666; margin-top: 2px; text-align: center; }
         .item-btn span { font-size: 24px; }
@@ -88,7 +88,7 @@
         /* タイトル・スタート画面要素 */
         #start-screen { justify-content: flex-start; overflow-y: auto; }
         .start-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: auto; margin-bottom: auto; padding: 20px 0; flex-shrink: 0; }
-        .title-img { width: min(90%, 360px); max-height: 190px; object-fit: contain; height: auto; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); animation: floatTitle 3s ease-in-out infinite; }
+        .title-img { width: min(90%, 360px); max-height: 190px; object-fit: contain; height: auto; margin-bottom: 12px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); animation: floatTitle 3s ease-in-out infinite; }
         @keyframes floatTitle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         
         .start-desc { font-size: 15px; font-weight: bold; color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); margin-bottom: 15px; line-height: 1.5; }
@@ -117,7 +117,7 @@
         .combo-lvl3 { color: #e65100; font-size: 20px; font-weight: 900;}
         .combo-lvl4 { color: #ff6d00; font-size: 24px; font-weight: 900; }
 
-        /* ボーナス表示 */
+        /* ボーナス表示（タイマーエリア付近に移動） */
         .bonus-text { display: inline-block; font-size: 12px; font-weight: bold; color: #ff4081; background: rgba(255,255,255,0.9); padding: 2px 8px; border-radius: 10px; border: 2px solid #ff4081; pointer-events: none; opacity: 0; transition: opacity 0.2s; margin-left: 10px; }
         
         /* リアクションスタンプ表示 */
@@ -793,7 +793,7 @@
 
     function getResultMessage() {
         if (maxCombo === 32) return "一度も途切れなかったな！完璧だ！";
-        if (gameClearTime <= 50) return "俺と同じくらい速い記録だ！";
+        if (gameClearTime <= 30) return "俺と同じくらい速い記録だ！";
         if (finalScore >= 55000) return "ついにぬい界の頂点だ！ここまで付き合ってくれてありがとな！";
         if (finalScore >= 45000) return "すごいぞ！もう立派な達人ぬいだな！";
         if (finalScore >= 35000) return "もう一人前だな！いい修行だったぞ！";
