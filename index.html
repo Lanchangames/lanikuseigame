@@ -21,14 +21,14 @@
             transition: background 0.5s ease;
         }
         
-        /* レベル別背景色 */
-        .bg-lv1 { background: radial-gradient(circle, #fff 0%, #e0f7fa 100%) !important; }
-        .bg-lv2 { background: radial-gradient(circle, #fff 0%, #e8f5e9 100%) !important; }
-        .bg-lv3 { background: radial-gradient(circle, #fff 0%, #fff9c4 100%) !important; }
-        .bg-lv4 { background: radial-gradient(circle, #fff 0%, #ffe0b2 100%) !important; }
-        .bg-lv5 { background: radial-gradient(circle, #fff 0%, #f8bbd0 100%) !important; }
-        .bg-lv6 { background: radial-gradient(circle, #fff 0%, #e1bee7 100%) !important; }
-        .bg-lv7 { background: radial-gradient(circle, #fff 0%, #d1c4e9 100%) !important; }
+        /* レベル別背景色（フラットカラーに変更） */
+        .bg-lv1 { background: #eefbff !important; }
+        .bg-lv2 { background: #eef8ef !important; }
+        .bg-lv3 { background: #fffbe5 !important; }
+        .bg-lv4 { background: #fff1df !important; }
+        .bg-lv5 { background: #fcebf1 !important; }
+        .bg-lv6 { background: #f3eafa !important; }
+        .bg-lv7 { background: #eeeafd !important; }
         
         .bg-rainbow {
             animation: rainbowBG 1.5s linear infinite !important;
@@ -88,16 +88,16 @@
         /* タイトル・スタート画面要素 */
         #start-screen { justify-content: flex-start; overflow-y: auto; }
         .start-content { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: auto; margin-bottom: auto; padding: 20px 0; flex-shrink: 0; }
-        .title-img { width: min(90%, 360px); max-height: 190px; object-fit: contain; height: auto; margin-bottom: 12px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); animation: floatTitle 3s ease-in-out infinite; }
+        .title-img { width: min(90%, 360px); max-height: 190px; object-fit: contain; height: auto; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); animation: floatTitle 3s ease-in-out infinite; }
         @keyframes floatTitle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         
-        .start-desc { font-size: 15px; font-weight: bold; color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); margin-bottom: 12px; line-height: 1.5; }
+        .start-desc { font-size: 15px; font-weight: bold; color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); margin-bottom: 15px; line-height: 1.5; }
         
-        .start-avatar { max-width: 195px; height: auto; margin-bottom: 15px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); animation: floatAvatar 4s ease-in-out infinite; position: relative; }
+        .start-avatar { max-width: 195px; height: auto; margin-bottom: 20px; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4)); animation: floatAvatar 4s ease-in-out infinite; position: relative; }
         @keyframes floatAvatar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
         .avatar-glow { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%); border-radius: 50%; z-index: -1; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 
-        .start-cards { display: flex; gap: 10px; margin-bottom: 20px; width: 95%; max-width: 400px; justify-content: center; }
+        .start-cards { display: flex; gap: 10px; margin-bottom: 25px; width: 95%; max-width: 400px; justify-content: center; }
         .start-card { background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.5); border-radius: 12px; padding: 10px; flex: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .start-card-title { font-size: 11px; color: #e0f7fa; font-weight: bold; margin-bottom: 5px; }
         .start-card-value { font-size: 20px; font-weight: 900; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.4); }
@@ -109,13 +109,13 @@
         .sulking-filter { filter: grayscale(1) contrast(1.2) opacity(0.7) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
 
-        /* コンボ表示（段階的な派手さ + 一瞬表示） */
-        .combo-text { position: absolute; top: 100px; right: 20px; font-size: 24px; font-weight: bold; color: #ff9800; text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; pointer-events: none; opacity: 0; transition: transform 0.1s, opacity 0.2s; z-index: 10; transform: scale(1); transform-origin: center right; }
-        .combo-anim { transform: scale(1.3) !important; opacity: 1 !important; }
-        .combo-lvl2 { color: #ff3d00; text-shadow: 0 0 10px #ffeb3b, 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; font-size: 28px; }
-        .combo-lvl3 { color: #d50000; text-shadow: 0 0 20px #ff9800, 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; font-size: 34px; }
-        .combo-lvl4 { background: linear-gradient(45deg, #ff0000, #ffeb3b, #00e5ff, #d500f9); -webkit-background-clip: text; color: transparent; text-shadow: 0 0 25px rgba(255,255,255,0.8); font-size: 40px; animation: rainbowText 2s linear infinite; }
-        @keyframes rainbowText { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+        /* コンボ表示（控えめなデザイン・レイアウト内に配置） */
+        .combo-area { height: 24px; display: flex; justify-content: center; align-items: center; margin-top: 5px; margin-bottom: 5px;}
+        .combo-text { font-size: 18px; font-weight: bold; color: #ff9800; pointer-events: none; opacity: 0; transition: transform 0.1s, opacity 0.2s; transform: scale(1); }
+        .combo-anim { transform: scale(1.08) !important; opacity: 1 !important; }
+        .combo-lvl2 { color: #f57c00; }
+        .combo-lvl3 { color: #e65100; font-size: 20px; font-weight: 900;}
+        .combo-lvl4 { color: #ff6d00; font-size: 24px; font-weight: 900; }
 
         /* ボーナス表示 */
         .bonus-text { display: inline-block; font-size: 12px; font-weight: bold; color: #ff4081; background: rgba(255,255,255,0.9); padding: 2px 8px; border-radius: 10px; border: 2px solid #ff4081; pointer-events: none; opacity: 0; transition: opacity 0.2s; margin-left: 10px; }
@@ -162,10 +162,9 @@
         /* INFOリンク & モーダル */
         .info-link {
             margin-top: 15px;
-            color: #fff;
-            font-size: 15px;
-            font-weight: bold;
-            text-decoration: none;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            text-decoration: underline;
             cursor: pointer;
             background: rgba(255,255,255,0.18);
             border: 1px solid rgba(255,255,255,0.55);
@@ -185,14 +184,16 @@
 
         /* 短い画面用（スタート・リザルト共通）最適化 */
         @media (max-height: 700px) {
-            .title-img { max-height: 145px; margin-bottom: 8px; }
-            .start-desc { font-size: 13px; margin-bottom: 8px; }
-            .start-avatar { max-width: 160px; margin-bottom: 10px; }
+            #start-screen { justify-content: flex-start; } 
+            #start-screen .start-content { margin-top: auto; margin-bottom: auto; } 
+            .title-img { max-height: 145px; margin-bottom: 10px; }
+            .start-desc { font-size: 13px; margin-bottom: 10px; }
+            .start-avatar { max-width: 160px; margin-bottom: 15px; }
             .start-cards { margin-bottom: 15px; gap: 8px; }
             .start-card { padding: 6px 8px; }
             .start-card-title { font-size: 10px; margin-bottom: 2px;}
             .start-card-value { font-size: 16px; }
-            .btn-main { padding: 12px 25px; font-size: 16px; }
+            .btn-main { margin-top: 8px; padding: 12px 25px; font-size: 16px; }
 
             #result-screen { overflow-y: auto; justify-content: flex-start; }
             .result-content { padding-top: 15px; padding-bottom: 20px; }
@@ -220,7 +221,7 @@
                 box-shadow: 0 15px 50px rgba(0,0,0,0.6);
             }
             #tray-scroll-area { height: 200px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-            #tray { grid-template-columns: repeat(3, 1fr); max-width: 600px; width: 100%; margin: 0 auto; padding: 12px 20px 20px; box-sizing: border-box;}
+            #tray { grid-template-columns: repeat(3, 1fr); max-width: 600px; width: 100%; margin: 0 auto; padding: 12px 20px 20px; }
             #msg-bubble { max-width: 500px; font-size: 16px; margin-bottom: 25px; }
             #avatar-container { width: 240px; }
             .result-content { max-width: 550px; }
@@ -349,7 +350,9 @@
     </div>
 
     <div id="stage">
-        <div id="combo-display" class="combo-text"></div>
+        <div class="combo-area">
+            <div id="combo-display" class="combo-text"></div>
+        </div>
         <div id="reaction-display" class="reaction-text"></div>
 
         <div id="msg-bubble"><span id="wanted">準備中...</span></div>
@@ -412,7 +415,7 @@
         "{item}！", 
         "{item}を持ってきてくれ！", 
         "{item}が欲しいぞ！", 
-        "う〜ん、{item} だ！"
+        "う〜ん、{item}だ！"
     ];
 
     const REACTIONS = [
@@ -791,7 +794,7 @@
 
     function getResultMessage() {
         if (maxCombo === 32) return "一度も途切れなかったな！完璧だ！";
-        if (gameClearTime <= 30) return "速すぎるだろ！？俺が追いつけないぞ！";
+        if (gameClearTime <= 50) return "俺と同じくらい速い記録だ！";
         if (finalScore >= 55000) return "ついにぬい界の頂点だ！ここまで付き合ってくれてありがとな！";
         if (finalScore >= 45000) return "すごいぞ！もう立派な達人ぬいだな！";
         if (finalScore >= 35000) return "もう一人前だな！いい修行だったぞ！";
